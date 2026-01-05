@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Study Planner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4338ca;
+    }
+
+    .output {
+      margin-top: 20px;
+      background: #eef2ff;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .subject {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>📘 Smart Study Planner</h2>
+
+    <label>Total Study Hours</label>
+    <input type="number" id="hours" placeholder="e.g. 4">
+
+    <label>Energy Level</label>
+    <select id="energy">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <label>Subject Name</label>
+    <input type="text" id="subject">
+
+    <label>Difficulty</label>
+    <select id="difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+
+    <button onclick="addSubject()">Add Subject</button>
+
+    <button onclick="generatePlan()">Generate Plan</button>
+
+    <div class="output" id="output">
+      <strong>Study Plan:</strong>
+      <div id="plan"></div>
+    </div>
+  </div>
+
+  <script>
+  let subjects = [];
+
+  function addSubject() {
+    const name = document.getElementById("subject").value.trim();
+    const difficulty = document.getElementById("difficulty").value;
+
+    if (!name) {
+      alert("Please enter a subject");
+      return;
+    }
+
+    subjects.push({ name, difficulty });
+    document.getElementById("subject").value = "";
+  }
+
+  function generatePlan() {
+    const hours = Number(document.getElementById("hours").value);
+    const energy = document.getElementById("energy").value;
+    const planDiv = document.getElementById("plan");
+
+    if (!hours || subjects.length === 0) {
+      alert("Enter hours and add subjects");
+      return;
+    }
+
+    planDiv.innerHTML = "";
+
+    const SESSION = 45;
+    const totalSessions = Math.floor((hours * 60) / SESSION);
+
+    let lastDifficulty = null;
+    let index = 0;
+
+    for (let i = 0; i < totalSessions; i++) {
+      const subject = subjects[index % subjects.length];
+
+      // Avoid hard-hard
+      if (lastDifficulty === "hard" && subject.difficulty === "hard") {
+        index++;
+        i--;
+        continue;
+      }
+
+      // Study session
+      planDiv.innerHTML += `
+        <div class="subject">
+          📘 <strong>${subject.name}</strong> (${subject.difficulty}) – 45 min
+          <br><small>
+            ${
+              subject.difficulty === "hard"
+                ? "Placed early because it needs high focus."
+                : "Scheduled to maintain steady energy."
+            }
+          </small>
+        </div>
+      `;
+
+      lastDifficulty = subject.difficulty;
+
+      // Break
+      const breakTime =
+        subject.difficulty === "hard" ? 15 :
+        subject.difficulty === "medium" ? 10 : 5;
+
+      planDiv.innerHTML += `
+        <div class="subject">
+          ☕ Break – ${breakTime} min
+          <br><small>Added for mental recovery.</small>
+        </div>
+      `;
+
+      index++;
+    }
+  }
+</script>
+
+
+</body>
+</html>
