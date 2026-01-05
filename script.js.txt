@@ -1,0 +1,78 @@
+/***************
+ GLOBAL STORAGE
+****************/
+  let subjects = [];
+
+  function addSubject() {
+    const name = document.getElementById("subject").value.trim();
+    const difficulty = document.getElementById("difficulty").value;
+
+    if (!name) {
+      alert("Please enter a subject");
+      return;
+    }
+
+    subjects.push({ name, difficulty });
+    document.getElementById("subject").value = "";
+  }
+
+  function generatePlan() {
+    const hours = Number(document.getElementById("hours").value);
+    const energy = document.getElementById("energy").value;
+    const planDiv = document.getElementById("plan");
+
+    if (!hours || subjects.length === 0) {
+      alert("Enter hours and add subjects");
+      return;
+    }
+
+    planDiv.innerHTML = "";
+
+    const SESSION = 45;
+    const totalSessions = Math.floor((hours * 60) / SESSION);
+
+    let lastDifficulty = null;
+    let index = 0;
+
+    for (let i = 0; i < totalSessions; i++) {
+      const subject = subjects[index % subjects.length];
+
+      // Avoid hard-hard
+      if (lastDifficulty === "hard" && subject.difficulty === "hard") {
+        index++;
+        i--;
+        continue;
+      }
+
+      // Study session
+      planDiv.innerHTML += `
+        <div class="subject">
+          📘 <strong>${subject.name}</strong> (${subject.difficulty}) – 45 min
+          <br><small>
+            ${
+              subject.difficulty === "hard"
+                ? "Placed early because it needs high focus."
+                : "Scheduled to maintain steady energy."
+            }
+          </small>
+        </div>
+      `;
+
+      lastDifficulty = subject.difficulty;
+
+      // Break
+      const breakTime =
+        subject.difficulty === "hard" ? 15 :
+        subject.difficulty === "medium" ? 10 : 5;
+
+      planDiv.innerHTML += `
+        <div class="subject">
+          ☕ Break – ${breakTime} min
+          <br><small>Added for mental recovery.</small>
+        </div>
+      `;
+
+      index++;
+    }
+  }
+
