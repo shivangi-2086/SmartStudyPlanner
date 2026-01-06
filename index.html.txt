@@ -2,69 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Smart Study Planner</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 500px;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin: auto;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-    }
-
-    label {
-      display: block;
-      margin-top: 12px;
-      font-weight: bold;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background: #4f46e5;
-      color: white;
-      border: none;
-      margin-top: 15px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #4338ca;
-    }
-
-    .output {
-      margin-top: 20px;
-      background: #eef2ff;
-      padding: 12px;
-      border-radius: 6px;
-    }
-
-    .subject {
-      margin-bottom: 6px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="container">
-    <h2>📘 Smart Study Planner</h2>
+  <h2>📘 Smart Study Planner</h2>
+  <p class="subtitle">Plan focused sessions with smart breaks.</p>
 
     <label>Total Study Hours</label>
     <input type="number" id="hours" placeholder="e.g. 4">
@@ -86,9 +32,10 @@
       <option value="hard">Hard</option>
     </select>
 
-    <button onclick="addSubject()">Add Subject</button>
-
-    <button onclick="generatePlan()">Generate Plan</button>
+    <div class="actions">
+      <button class="secondary add-btn" onclick="addSubject()">Add Subject</button>
+      <button class="primary" onclick="generatePlan()">Generate Plan</button>
+    </div>
 
     <div class="output" id="output">
       <strong>Study Plan:</strong>
@@ -140,17 +87,24 @@
         continue;
       }
 
-      // Study session
+      // Study session (render badge + name + note)
       planDiv.innerHTML += `
         <div class="subject">
-          📘 <strong>${subject.name}</strong> (${subject.difficulty}) – 45 min
-          <br><small>
-            ${
-              subject.difficulty === "hard"
-                ? "Placed early because it needs high focus."
-                : "Scheduled to maintain steady energy."
-            }
-          </small>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="badge ${subject.difficulty}">${subject.difficulty}</span>
+            <div style="flex:1">
+              <div style="font-weight:700; margin-bottom:4px;">
+                📘 ${subject.name} <span style="font-weight:600;color:var(--muted);font-size:0.92rem">– 45 min</span>
+              </div>
+              <small>
+                ${
+                  subject.difficulty === "hard"
+                    ? "Placed early because it needs high focus."
+                    : "Scheduled to maintain steady energy."
+                }
+              </small>
+            </div>
+          </div>
         </div>
       `;
 
